@@ -231,6 +231,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     if(bUseViewer)
     //if(false) // TODO
     {
+        // print viewer has been enabled
+        cout << "Viewer has been enabled" << endl;
         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker,strSettingsFile,settings_);
         mptViewer = new thread(&Viewer::Run, mpViewer);
         mpTracker->SetViewer(mpViewer);

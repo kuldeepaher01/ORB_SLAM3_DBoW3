@@ -43,62 +43,65 @@ For this purpose, you can use the ''associate.py'' script. It reads the time sta
 import argparse
 import sys
 import os
-import numpy
+import numpy as np
 
-
-def read_file_list(filename,remove_bounds):
+def read_file_list(filename, add_time_offset):
     """
     Reads a trajectory from a text file. 
-    
-    File format:
-    The file format is "stamp d1 d2 d3 ...", where stamp denotes the time stamp (to be matched)
-    and "d1 d2 d3.." is arbitary data (e.g., a 3D position and 3D orientation) associated to this timestamp. 
-    
+
     Input:
-    filename -- File name
-    
+    filename -- file to be read
+    add_time_offset -- boolean to indicate if a time offset should be added
+
     Output:
-    dict -- dictionary of (stamp,data) tuples
-    
+    dict -- dictionary of (stamp, (tx, ty, tz, qx, qy, qz, qw)) tuples
     """
     file = open(filename)
-    data = file.read()
-    lines = data.replace(","," ").replace("\t"," ").split("\n")
-    if remove_bounds:
-        lines = lines[100:-100]
-    list = [[v.strip() for v in line.split(" ") if v.strip()!=""] for line in lines if len(line)>0 and line[0]!="#"]
-    list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
-    return dict(list)
-
-def associate(first_list, second_list,offset,max_difference):
-    """
-    Associate two dictionaries of (stamp,data). As the time stamps never match exactly, we aim 
-    to find the closest match for every input tuple.
+    data = file.read().replace(",", " ").replace("\t", " ")
+    lines = data.split("\n")
+    list_of_lists = [line.strip().split(" ") for line in lines if len(line) > 0 and line[0] != "#"]
     
+    list_of_lists = [[float(i) for i in l] for l in list_of_lists]
+    
+    if add_time_offset:
+        min_stamp = min([l[0] for l in list_of_lists])
+        for l in list_of_lists:
+            l[0] -= min_stamp
+    
+    return {l[0]: l[1:] for l in list_of_lists}
+
+def associate(first_list, second_list, offset, max_difference):
+    """
+    Associate two dictionaries of (stamp, data). As the time stamps never match exactly,
+    we aim to find the best match for each time stamp in the first dictionary (first_list).
+
     Input:
-    first_list -- first dictionary of (stamp,data) tuples
-    second_list -- second dictionary of (stamp,data) tuples
-    offset -- time offset between both dictionaries (e.g., to model the delay between the sensors)
+    first_list -- first dictionary of (stamp, data)
+    second_list -- second dictionary of (stamp, data)
+    offset -- time offset between both dictionaries
     max_difference -- search radius for candidate generation
 
     Output:
-    matches -- list of matched tuples ((stamp1,data1),(stamp2,data2))
-    
+    matches -- list of matched tuples ((stamp1, data1), (stamp2, data2))
     """
-    first_keys = first_list.keys()
-    second_keys = second_list.keys()
-    potential_matches = [(abs(a - (b + offset)), a, b) 
-                         for a in first_keys 
-                         for b in second_keys 
-                         if abs(a - (b + offset)) < max_difference]
-    potential_matches.sort()
+    first_keys = list(first_list.keys())
+    second_keys = list(second_list.keys())
+    
+    potential_matches = []
+    for a in first_keys:
+        for b in second_keys:
+            if abs(a - (b + offset)) < max_difference:
+                potential_matches.append((a, b))
+
+    potential_matches.sort(key=lambda x: abs(x[0] - (x[1] + offset)))
+
     matches = []
-    for diff, a, b in potential_matches:
+    for a, b in potential_matches:
         if a in first_keys and b in second_keys:
             first_keys.remove(a)
             second_keys.remove(b)
             matches.append((a, b))
-    
+
     matches.sort()
     return matches
 
