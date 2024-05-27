@@ -57,14 +57,14 @@ sudo apt install libeigen3-dev
 ```
 ---
 
-### Install OpenCV 3.2.0
+### Install OpenCV 4.2.0
 The ORB-SLAM 3 was test by  
 ```shell
 cd ~
 mkdir Dev && cd Dev
 git clone https://github.com/opencv/opencv.git
 cd opencv
-git checkout 3.2.0
+git checkout 4.2.0
 ```
 Put the following at the top of header file `gedit ./modules/videoio/src/cap_ffmpeg_impl.hpp`  
 `#define AV_CODEC_FLAG_GLOBAL_HEADER (1 << 22)`  
@@ -101,16 +101,10 @@ Now, we install ORB-SLAM3. I used the commit version ef9784101fbd28506b52f233315
 
 ```shell
 cd ~/Dev
-git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git 
+git clone https://github.com/kuldeepaher01/ORB_SLAM3_DBoW3.git ORB_SLAM3
 cd ORB_SLAM3
 ```
-We need to change the header file `gedit ./include/LoopClosing.h` at line 51  
-from  
-`Eigen::aligned_allocator<std::pair<const KeyFrame*, g2o::Sim3> > > KeyFrameAndPose;`  
-to  
-`Eigen::aligned_allocator<std::pair<KeyFrame *const, g2o::Sim3> > > KeyFrameAndPose;`
-in order to make this comiple.  
-Now, we can comiple ORB-SLAM3 and it dependencies as DBoW2 and g2o.  
+Now, we can comiple ORB-SLAM3 and it dependencies as DBoW3 and g2o.  
 
 Now Simply just run (if you encounter compiler, try to run the this shell script 2 or 3 more time. It works for me.)
 ```shell
