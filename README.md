@@ -1,9 +1,17 @@
 # ORB-SLAM3-DBoW3 
 
-This repo is an port from DBoW2 to DBoW3
+This repo is a port from DBoW2 to DBoW3
 
-This repository is a modified version of [ORB_SLAM3](https://github.com/UZ-SLAMLab/ORB_SLAM3)  
-and [ORB_SLAM3_STEREO_FIXED](https://github.com/zang09/ORB-SLAM3-STEREO-FIXED)
+(I have kept the DBoW2 files too they dont get built they are just there for refrence)
+
+<!-- Give disclaimer that ROS has not been ported so while building ROS u might face errors due to Random:: namespace -->
+### ROS has not been ported yet so while building ROS u might face errors due to Random:: namespace
+### You can try ROS2-foxy with OpenCV 4.2.0 and Ubuntu 20.04 here is the [link](
+    https://github.com/kuldeepaher01/orbslam3_ros2_foxy.git)
+<!-- Also the ROS examples have not been tested -->
+
+
+This repository is a modified version of [ORB_SLAM3_STEREO_FIXED](https://github.com/zang09/ORB-SLAM3-STEREO-FIXED)
 
 --- 
 
